@@ -1,24 +1,24 @@
-#### An Ambari Service for Flink
+### original
+https://github.com/abajwa-hw/ambari-flink-service
+Author: [Ali Bajwa](https://github.com/abajwa-hw)
+- Thanks to [Davide Vergari](https://github.com/dvergari) for enhancing to run in clustered env
+- Thanks to [Ben Harris](https://github.com/jamesbenharris) for updating libraries to work with HDP 2.5.3
+- Thanks to [Anand Subramanian](https://github.com/anandsubbu) for updating libraries to work with HDP 2.6.5 and flink version 1.8.1
+#### An Ambari Service for Flink 
 Ambari service for easily installing and managing Flink on HDP clusters.
 Apache Flink is an open source platform for distributed stream and batch data processing
 More details on Flink and how it is being used in the industry today available here: [http://flink-forward.org/?post_type=session](http://flink-forward.org/?post_type=session)
 
-
 The Ambari service lets you easily install/compile Flink on HDP 2.6.5
 - Features:
-  - By default, downloads prebuilt package of Flink 1.8.1, but also gives option to build the latest Flink from source instead
+  - By default, downloads prebuilt package of Flink 1.9.1, but also gives option to build the latest Flink from source instead
   - Exposes flink-conf.yaml in Ambari UI 
 
 Limitations:
   - This is not an officially supported service and *is not meant to be deployed in production systems*. It is only meant for testing demo/purposes
   - It does not support Ambari/HDP upgrade process and will cause upgrade problems if not removed prior to upgrade
-
-Author: [Ali Bajwa](https://github.com/abajwa-hw)
-- Thanks to [Davide Vergari](https://github.com/dvergari) for enhancing to run in clustered env
-- Thanks to [Ben Harris](https://github.com/jamesbenharris) for updating libraries to work with HDP 2.5.3
-- Thanks to [Anand Subramanian](https://github.com/anandsubbu) for updating libraries to work with HDP 2.6.5 and flink version 1.8.1
-- Thanks to [jzyhappy](https://github.com/jzyhappy) for updating libraries to work with HDP 2.6.5 and flink version 1.9.1
-#### Setup
+  
+#### Setup (中文访问 https://blog.csdn.net/jzy3711/article/details/104043860)
 
 - Download HDP 2.6 sandbox VM image (HDP_2.6.5_virtualbox_180626.ova) from [Cloudera website](https://www.cloudera.com/downloads/hortonworks-sandbox/hdp.html)
 - Import HDP_2.6.5_virtualbox_180626.ova into VMWare and set the VM memory size to 8GB
@@ -87,6 +87,44 @@ curl -u admin:$PASSWORD -i -H 'X-Requested-By: ambari' -X PUT -d '{"RequestInfo"
 ```
 
 - ...and also install via Blueprint. See example [here](https://github.com/abajwa-hw/ambari-workshops/blob/master/blueprints-demo-security.md) on how to deploy custom services via Blueprints
+
+#### set Flink version
+- configuration/flink-ambari-config.xml
+```
+<property>
+    <name>flink_download_url</name>
+    <value>http://X.X.151.15/Package/flink-1.9.0-bin-scala_2.11.tgz</value>
+    <description>Snapshot download location. Downloaded when setup_prebuilt is true</description>
+ </property>
+ ```
+value from [here](http://apachemirror.wuchna.com/flink/) or [here](http://www.us.apache.org/dist/flink/)  or [here](https://archive.apache.org/dist/) or customize repo
+
+- metainfo.xml
+```
+<name>FLINK</name>
+            <displayName>Flink</displayName>
+            <comment>Apache Flink is a streaming dataflow engine that provides data distribution, communication, and fault tolerance for distributed computations over data streams.</comment>
+            <version>1.9.0</version>
+ ```
+ vsersion = your flink version
+ 
+#### Flink on Yarn
+- metainfo.xml
+```
+<property>
+	<name>yarn.client.failover-proxy-provider</name>
+	<value>org.apache.hadoop.yarn.client.ConfiguredRMFailoverProxyProvider</value>
+</property>
+ ```
+ restart yarn
+ 
+ #### Flink Configuration
+- java_home is consistent with / etc / profile
+```
+hdp-select status hadoop-client
+hadoop-client - <version>
+```
+- hadodp_conf_dir = /etc/hadoop/<version>/0
 
 #### Use Flink
 
